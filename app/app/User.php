@@ -27,4 +27,19 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    public function addConnection(User $user)
+    {
+        $this->connections()->attach($user->id);
+    }
+
+    public function connections()
+    {
+        return $this->belongsToMany('App\User', 'connections', 'user_id', 'connection_id');
+    }
+
+    public function removeConnection(User $user)
+    {
+        $this->connections()->detach($user->id);
+    }
 }
