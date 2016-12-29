@@ -42,4 +42,9 @@ class User extends Authenticatable
     {
         $this->connections()->detach($user->id);
     }
+
+    public function groups()
+    {
+        return $this->belongsToMany('App\Group', 'members', 'user_id', 'group_id');
+    }
 }

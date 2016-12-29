@@ -22,3 +22,13 @@ $factory->define(App\User::class, function (Faker\Generator $faker) {
         'remember_token' => str_random(10),
     ];
 });
+
+$factory->define(App\Group::class, function (Faker\Generator $faker) {
+
+    return [
+        'name' => $faker->unique()->name,
+        'type' => $faker->randomElement(['academic', 'committee']),
+        'privacy' => $faker->randomElement(['open', 'closed']),
+        'interaction' => $faker->randomElement(['informative', 'interactive']),
+    ];
+});
