@@ -19,6 +19,16 @@ class GroupTest extends TestCase
         $this->assertEquals($group->name, $groups->first()->name);
     }
 
+    public function testGroupDeletion()
+    {
+        $group = factory(App\Group::class)->create();
+        $user = factory(App\User::class)->create();
+
+        $group->addMember($user);
+        $group->delete();
+        $this->assertEquals(0, $user->groups()->count());
+    }
+
     public function testMemberCreation()
     {
         $group = factory(App\Group::class)->create();
@@ -49,5 +59,52 @@ class GroupTest extends TestCase
         $group->removeOwner($user);
         $this->assertEquals(0, $group->owners()->count());
         $this->assertFalse($group->isOwner($user));
+    }
+
+    public function testGroupRoute()
+    {
+        $user = factory(App\User::class)->create();
+        $group = factory(App\Group::class)->make();
+
+        $this->json('POST', '/groups', [
+            'name' => $group->name
+        ])->seeStatusCode(400);
+
+        $this->json('POST', '/groups', [
+            'name' => $group->name,
+            'type' => $group->type,
+            'privacy' => $group->privacy,
+            'interaction' => $group->interaction,
+            'owner' => 'testuser'
+        ])->seeStatusCode(404);
+
+        $this->json('POST', '/groups', [
+            'name' => $group->name,
+            'type' => $group->type,
+            'privacy' => $group->privacy,
+            'interaction' => $group->interaction,
+            'owner' => $user->email
+        ])->seeStatusCode(201);
+
+        $this->json('POST', '/groups', [
+            'name' => $group->name,
+            'type' => $group->type,
+            'privacy' => $group->privacy,
+            'interaction' => $group->interaction,
+            'owner' => $user->email
+        ])->seeStatusCode(409);
+
+        $this->get('/groups')
+            ->seeJson([
+                'name' => $group->name,
+                'totalOwners' => 1
+            ]);
+
+        $this->get('/groups/' . $group->name)
+            ->seeJson([
+                'name' => $group->name,
+                'totalOwners' => 1
+            ]);
+
     }
 }

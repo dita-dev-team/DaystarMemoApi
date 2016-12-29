@@ -18,7 +18,7 @@ class CreateGroupOwnersTable extends Migration
             $table->integer('user_id')->unsigned();
 
             $table->foreign('user_id')->references('id')->on('users');
-            $table->foreign('group_id')->references('id')->on('groups');
+            $table->foreign('group_id')->references('id')->on('groups')->onDelete('cascade');
 
             $table->primary(array('user_id', 'group_id'));
             $table->timestamps();
