@@ -18,3 +18,12 @@ Route::get('/', function () {
 Route::resource('groups', 'GroupController', ['except' => [
     'edit', 'create'
 ]]);
+
+Route::get('/testauth', function () {
+    return response()->json([
+        'message' => 'This is just a test authentication page'
+    ]);
+})->middleware('auth:api');
+Auth::routes();
+
+Route::get('/home', 'HomeController@index');

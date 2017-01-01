@@ -32,3 +32,14 @@ $factory->define(App\Group::class, function (Faker\Generator $faker) {
         'interaction' => $faker->randomElement(['informative', 'interactive']),
     ];
 });
+
+$factory->define(\Laravel\Passport\Client::class, function (Faker\Generator $faker) {
+    return [
+        'name' => 'test-client',
+        'secret' => $faker->text(100),
+        'redirect' => '',
+        'personal_access_client' => false,
+        'password_client' => true,
+        'revoked' => false
+    ];
+});

@@ -3,6 +3,9 @@
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
+use Laravel\Passport\ClientRepository;
 
 class UserTest extends TestCase
 {
@@ -28,6 +31,60 @@ class UserTest extends TestCase
 
         $user1->removeConnection($user2);
         $this->assertEquals(0, $user1->connections()->count());
+
+    }
+
+    public function testApiAuthentication()
+    {
+        $this->json('GET', '/testauth')
+            ->seeStatusCode(401);
+
+        $user = factory(App\User::class)->make();
+
+        $this->json('POST', '/register', [
+            'name' => $user->name,
+            'email' => $user->email,
+            'password' => $user->password,
+            'password_confirmation' => $user->password
+        ])->seeStatusCode(200);
+
+        // test duplicates
+        $this->json('POST', '/register', [
+            'name' => $user->name,
+            'email' => $user->email,
+            'password' => $user->password,
+            'password_confirmation' => $user->password
+        ])->seeStatusCode(422);
+
+        /*
+        $this->json('POST', '/login', [
+            'email' => $user->email,
+            'password' => $user->password
+        ])->seeStatusCode(200);
+        */
+
+        $client = factory(\Laravel\Passport\Client::class)->make();
+        $client->redirect = $this->baseUrl . '/testauth';
+        $client->save();
+
+        $this->json('POST', '/oauth/token', [
+            'grant_type' => 'password',
+            'client_id' => $client->id,
+            'client_secret' => $client->secret,
+            'username' => $user->email,
+            'password' => $user->password,
+            'scope' => ''
+        ])->see('access_token');
+
+        $accessToken = $this->decodeResponseJson()['access_token'];
+
+        $this->json('GET', '/testauth', [], [
+            'Authorization' => 'Bearer ' . $accessToken
+        ])->seeJson([
+            'message' => 'This is just a test authentication page'
+        ]);
+        //dd($accessToken);
+        //dd($this->baseUrl);
 
     }
 }
