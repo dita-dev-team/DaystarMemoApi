@@ -19,6 +19,9 @@ Route::resource('groups', 'GroupController', ['except' => [
     'edit', 'create'
 ]]);
 
+Route::post('groups/{name}/join', 'GroupDetailsController@join');
+Route::post('groups/{name}/leave', 'GroupDetailsController@leave');
+
 Route::get('/testauth', function () {
     return response()->json([
         'message' => 'This is just a test authentication page'

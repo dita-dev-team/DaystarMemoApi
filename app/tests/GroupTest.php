@@ -44,6 +44,41 @@ class GroupTest extends TestCase
         $group->removeMember($user);
         $this->assertEquals(0, $group->members()->count());
         $this->assertFalse($group->isMember($user));
+
+        $user = factory(App\User::class)->create();
+        $group = factory(App\Group::class)->create();
+
+        $this->json('POST', '/groups/asfs/join', [])
+            ->seeStatusCode(404);
+
+        $this->json('POST', '/groups/asfs/leave', [])
+            ->seeStatusCode(404);
+
+        $this->json('POST', '/groups/' . $group->name . '/join', [])
+            ->seeStatusCode(400);
+
+        $this->json('POST', '/groups/' . $group->name . '/leave', [])
+            ->seeStatusCode(400);
+
+        $this->json('POST', '/groups/' . $group->name . '/join', [
+            'username' => 'sdfsd'
+        ])->seeStatusCode(404);
+
+        $this->json('POST', '/groups/' . $group->name . '/leave', [
+            'username' => 'sdfsd'
+        ])->seeStatusCode(404);
+
+        $this->json('POST', '/groups/' . $group->name . '/join', [
+            'username' => $user->email
+        ])->seeStatusCode(200);
+
+        $this->assertEquals(1, $user->groups()->count());
+
+        $this->json('POST', '/groups/' . $group->name . '/leave', [
+            'username' => $user->email
+        ])->seeStatusCode(200);
+
+        $this->assertEquals(0, $user->groups()->count());
     }
 
     public function testOwnerCreation()
