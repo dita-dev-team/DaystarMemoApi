@@ -1,5 +1,8 @@
+/node_modules
+/public/storage
+/storage/*.key
 /vendor
-.DS_Store
-.idea/php.xml
-.idea/workspace.xml
-/.idea/
+/.idea
+Homestead.json
+Homestead.yaml
+.env
