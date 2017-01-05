@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Foundation\Testing\WithoutMiddleware;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class GroupTest extends TestCase
@@ -94,6 +92,44 @@ class GroupTest extends TestCase
         $group->removeOwner($user);
         $this->assertEquals(0, $group->owners()->count());
         $this->assertFalse($group->isOwner($user));
+
+        $this->json('POST', '/groups/asfs/owner/add', [])
+            ->seeStatusCode(404);
+
+        $this->json('POST', '/groups/asfs/owner/remove', [])
+            ->seeStatusCode(404);
+
+        $this->json('POST', '/groups/' . $group->name . '/owner/add', [])
+            ->seeStatusCode(400);
+
+        $this->json('POST', '/groups/' . $group->name . '/owner/remove', [])
+            ->seeStatusCode(400);
+
+        $this->json('POST', '/groups/' . $group->name . '/owner/add', [
+            'username' => 'sdfsd'
+        ])->seeStatusCode(404);
+
+        $this->json('POST', '/groups/' . $group->name . '/owner/remove', [
+            'username' => 'sdfsd'
+        ])->seeStatusCode(404);
+
+        $this->json('POST', '/groups/' . $group->name . '/owner/add', [
+            'username' => $user->email
+        ])->seeStatusCode(401);
+
+        $group->addMember($user);
+
+        $this->json('POST', '/groups/' . $group->name . '/owner/add', [
+            'username' => $user->email
+        ])->seeStatusCode(200);
+
+        $this->assertEquals(1, $group->owners()->count());
+
+        $this->json('POST', '/groups/' . $group->name . '/owner/remove', [
+            'username' => $user->email
+        ])->seeStatusCode(200);
+
+        $this->assertEquals(0, $group->owners()->count());
     }
 
     public function testGroupRoute()

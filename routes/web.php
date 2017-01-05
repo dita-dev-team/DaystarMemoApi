@@ -21,6 +21,8 @@ Route::resource('groups', 'GroupController', ['except' => [
 
 Route::post('groups/{name}/join', 'GroupDetailsController@join');
 Route::post('groups/{name}/leave', 'GroupDetailsController@leave');
+Route::post('groups/{name}/owner/add', 'GroupDetailsController@addOwner');
+Route::post('groups/{name}/owner/remove', 'GroupDetailsController@removeOwner');
 
 Route::get('/testauth', function () {
     return response()->json([
