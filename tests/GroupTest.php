@@ -46,33 +46,33 @@ class GroupTest extends TestCase
         $user = factory(App\User::class)->create();
         $group = factory(App\Group::class)->create();
 
-        $this->json('POST', '/groups/asfs/join', [])
+        $this->json('POST', '/api/groups/asfs/join', [])
             ->seeStatusCode(404);
 
-        $this->json('POST', '/groups/asfs/leave', [])
+        $this->json('POST', '/api/groups/asfs/leave', [])
             ->seeStatusCode(404);
 
-        $this->json('POST', '/groups/' . $group->name . '/join', [])
+        $this->json('POST', '/api/groups/' . $group->name . '/join', [])
             ->seeStatusCode(400);
 
-        $this->json('POST', '/groups/' . $group->name . '/leave', [])
+        $this->json('POST', '/api/groups/' . $group->name . '/leave', [])
             ->seeStatusCode(400);
 
-        $this->json('POST', '/groups/' . $group->name . '/join', [
+        $this->json('POST', '/api/groups/' . $group->name . '/join', [
             'username' => 'sdfsd'
         ])->seeStatusCode(404);
 
-        $this->json('POST', '/groups/' . $group->name . '/leave', [
+        $this->json('POST', '/api/groups/' . $group->name . '/leave', [
             'username' => 'sdfsd'
         ])->seeStatusCode(404);
 
-        $this->json('POST', '/groups/' . $group->name . '/join', [
+        $this->json('POST', '/api/groups/' . $group->name . '/join', [
             'username' => $user->email
         ])->seeStatusCode(200);
 
         $this->assertEquals(1, $user->groups()->count());
 
-        $this->json('POST', '/groups/' . $group->name . '/leave', [
+        $this->json('POST', '/api/groups/' . $group->name . '/leave', [
             'username' => $user->email
         ])->seeStatusCode(200);
 
@@ -93,39 +93,39 @@ class GroupTest extends TestCase
         $this->assertEquals(0, $group->owners()->count());
         $this->assertFalse($group->isOwner($user));
 
-        $this->json('POST', '/groups/asfs/owner/add', [])
+        $this->json('POST', '/api/groups/asfs/owner/add', [])
             ->seeStatusCode(404);
 
-        $this->json('POST', '/groups/asfs/owner/remove', [])
+        $this->json('POST', '/api/groups/asfs/owner/remove', [])
             ->seeStatusCode(404);
 
-        $this->json('POST', '/groups/' . $group->name . '/owner/add', [])
+        $this->json('POST', '/api/groups/' . $group->name . '/owner/add', [])
             ->seeStatusCode(400);
 
-        $this->json('POST', '/groups/' . $group->name . '/owner/remove', [])
+        $this->json('POST', '/api/groups/' . $group->name . '/owner/remove', [])
             ->seeStatusCode(400);
 
-        $this->json('POST', '/groups/' . $group->name . '/owner/add', [
+        $this->json('POST', '/api/groups/' . $group->name . '/owner/add', [
             'username' => 'sdfsd'
         ])->seeStatusCode(404);
 
-        $this->json('POST', '/groups/' . $group->name . '/owner/remove', [
+        $this->json('POST', '/api/groups/' . $group->name . '/owner/remove', [
             'username' => 'sdfsd'
         ])->seeStatusCode(404);
 
-        $this->json('POST', '/groups/' . $group->name . '/owner/add', [
+        $this->json('POST', '/api/groups/' . $group->name . '/owner/add', [
             'username' => $user->email
         ])->seeStatusCode(401);
 
         $group->addMember($user);
 
-        $this->json('POST', '/groups/' . $group->name . '/owner/add', [
+        $this->json('POST', '/api/groups/' . $group->name . '/owner/add', [
             'username' => $user->email
         ])->seeStatusCode(200);
 
         $this->assertEquals(1, $group->owners()->count());
 
-        $this->json('POST', '/groups/' . $group->name . '/owner/remove', [
+        $this->json('POST', '/api/groups/' . $group->name . '/owner/remove', [
             'username' => $user->email
         ])->seeStatusCode(200);
 
@@ -137,11 +137,11 @@ class GroupTest extends TestCase
         $user = factory(App\User::class)->create();
         $group = factory(App\Group::class)->make();
 
-        $this->json('POST', '/groups', [
+        $this->json('POST', '/api/groups', [
             'name' => $group->name
         ])->seeStatusCode(400);
 
-        $this->json('POST', '/groups', [
+        $this->json('POST', '/api/groups', [
             'name' => $group->name,
             'type' => $group->type,
             'privacy' => $group->privacy,
@@ -149,7 +149,7 @@ class GroupTest extends TestCase
             'owner' => 'testuser'
         ])->seeStatusCode(404);
 
-        $this->json('POST', '/groups', [
+        $this->json('POST', '/api/groups', [
             'name' => $group->name,
             'type' => $group->type,
             'privacy' => $group->privacy,
@@ -157,7 +157,7 @@ class GroupTest extends TestCase
             'owner' => $user->email
         ])->seeStatusCode(201);
 
-        $this->json('POST', '/groups', [
+        $this->json('POST', '/api/groups', [
             'name' => $group->name,
             'type' => $group->type,
             'privacy' => $group->privacy,
@@ -165,13 +165,13 @@ class GroupTest extends TestCase
             'owner' => $user->email
         ])->seeStatusCode(409);
 
-        $this->get('/groups')
+        $this->get('/api/groups')
             ->seeJson([
                 'name' => $group->name,
                 'totalOwners' => 1
             ]);
 
-        $this->get('/groups/' . $group->name)
+        $this->get('/api/groups/' . $group->name)
             ->seeJson([
                 'name' => $group->name,
                 'totalOwners' => 1
