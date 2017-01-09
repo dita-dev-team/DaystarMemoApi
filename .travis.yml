@@ -37,3 +37,7 @@ install:
   - if [[ $setup = 'lowest' ]]; then travis_retry composer update --prefer-dist --no-interaction --prefer-lowest --prefer-stable --no-suggest; fi
 
 script: vendor/bin/phpunit
+
+notifications:
+    on_success: never
+    on_failure: always
