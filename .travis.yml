@@ -6,7 +6,6 @@ php:
 
 env:
   - setup=basic
-  - USERNAME=root
 
 matrix:
   fast_finish: true
@@ -36,7 +35,9 @@ install:
   - if [[ $setup = 'stable' ]]; then travis_retry composer update --prefer-dist --no-interaction --prefer-stable --no-suggest; fi
   - if [[ $setup = 'lowest' ]]; then travis_retry composer update --prefer-dist --no-interaction --prefer-lowest --prefer-stable --no-suggest; fi
 
-script: phpunit
+script:
+  -php artisan key:generate
+  -phpunit
 
 notifications:
     on_success: never
