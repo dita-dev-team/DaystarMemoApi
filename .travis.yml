@@ -35,9 +35,10 @@ install:
   - if [[ $setup = 'stable' ]]; then travis_retry composer update --prefer-dist --no-interaction --prefer-stable --no-suggest; fi
   - if [[ $setup = 'lowest' ]]; then travis_retry composer update --prefer-dist --no-interaction --prefer-lowest --prefer-stable --no-suggest; fi
 
-script:
-  -php artisan key:generate
-  -phpunit
+before_script:
+ -php artisan key:generate
+ 
+script: phpunit
 
 notifications:
     on_success: never
