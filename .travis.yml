@@ -5,8 +5,7 @@ php:
   - 7.1
 
 env:
-  global:
-    - setup=basic
+  -USERNAME=root
 
 matrix:
   fast_finish: true
