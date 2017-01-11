@@ -25,6 +25,10 @@ Route::group(['prefix' => 'api'], function () {
     Route::post('groups/{name}/leave', 'GroupDetailsController@leave');
     Route::post('groups/{name}/owner/add', 'GroupDetailsController@addOwner');
     Route::post('groups/{name}/owner/remove', 'GroupDetailsController@removeOwner');
+
+    Route::resource('assets', 'AssetController', ['except' => [
+        'edit', 'create'
+    ]]);
 });
 
 
