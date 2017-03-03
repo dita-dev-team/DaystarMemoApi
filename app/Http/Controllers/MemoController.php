@@ -24,10 +24,7 @@ class MemoController extends Controller
                 'id' => $memo->id,
                 'file_url' => $memo->file_url,
                 'content' => $memo->content,
-                'user_id' => $memo->user('id'),
-                'user_name' => $memo->user('name'),
-                'group_id' => $memo->group('id'),
-                'group_name' => $memo->group('name')
+                'user_id' => $memo->user('user_id')
             ]);
             return  response()->json($result);
         }

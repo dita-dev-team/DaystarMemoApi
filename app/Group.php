@@ -52,7 +52,4 @@ class Group extends Model
         return $result != null;
     }
 
-    public function memo(){
-        return $this->hasMany('App\Memo');
-    }
 }

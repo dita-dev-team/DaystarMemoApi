@@ -10,11 +10,6 @@ class Memo extends Model
 
     public function user()
     {
-        return $this->belongsTo('App\Group');
-    }
-
-    public function group()
-    {
-        return $this->belongsTo('App\Group');
+        return $this->belongsTo('App\User');
     }
 }
