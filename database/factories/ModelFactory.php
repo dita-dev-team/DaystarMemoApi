@@ -43,3 +43,12 @@ $factory->define(\Laravel\Passport\Client::class, function (Faker\Generator $fak
         'revoked' => false
     ];
 });
+
+$factory->define(App\Asset::class, function (Faker\Generator $faker) {
+    return [
+        'description' => $faker->text(100),
+        'type' => $faker->fileExtension,
+        'size' => $faker->randomNumber(5),
+        'filepath' => '/tmp/' . $faker->text(10) . $faker->fileExtension
+    ];
+});
