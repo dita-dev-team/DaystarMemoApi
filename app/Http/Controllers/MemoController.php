@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Memo;
+use App\Group;
+use App\User;
 use Illuminate\Http\Request;
 
 class MemoController extends Controller
@@ -14,7 +16,21 @@ class MemoController extends Controller
      */
     public function index()
     {
-        //
+        $memos = Memo::all();
+        $result = array();
+
+        foreach ($memos as $memo){
+            array_push($result, [
+                'id' => $memo->id,
+                'file_url' => $memo->file_url,
+                'content' => $memo->content,
+                'user_id' => $memo->user('id'),
+                'user_name' => $memo->user('name'),
+                'group_id' => $memo->group('id'),
+                'group_name' => $memo->group('name')
+            ]);
+            return  response()->json($result);
+        }
     }
 
     /**

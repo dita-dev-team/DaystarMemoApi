@@ -29,6 +29,10 @@ Route::group(['prefix' => 'api'], function () {
     Route::resource('assets', 'AssetController', ['except' => [
         'edit', 'create'
     ]]);
+
+    Route::resource('memos', 'MemoController', ['only' => [
+        'index', 'show', 'store'
+    ]]);
 });
 
 

@@ -51,4 +51,8 @@ class Group extends Model
         $result = $this->members()->where('id', $user->id)->get()->first();
         return $result != null;
     }
+
+    public function memo(){
+        return $this->hasMany('App\Memo');
+    }
 }

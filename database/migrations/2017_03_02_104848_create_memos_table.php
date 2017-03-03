@@ -15,6 +15,8 @@ class CreateMemosTable extends Migration
     {
         Schema::create('memos', function (Blueprint $table) {
             $table->increments('id');
+            $table->text('content');
+            $table->text('file_url')->nullable();
             $table->timestamps();
         });
     }
