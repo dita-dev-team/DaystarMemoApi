@@ -52,3 +52,9 @@ $factory->define(App\Asset::class, function (Faker\Generator $faker) {
         'filepath' => '/tmp/' . $faker->text(10) . $faker->fileExtension
     ];
 });
+
+$factory->define(\App\Memo::class, function (Faker\Generator $faker) {
+   return [
+       'body' => $faker->text()
+   ];
+});
