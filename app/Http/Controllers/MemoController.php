@@ -24,10 +24,12 @@ class MemoController extends Controller
                 'id' => $memo->id,
                 'file_url' => $memo->file_url,
                 'content' => $memo->content,
-                'user_id' => $memo->user('user_id')
+                'user_id' => $memo->user_id,
+                'to' => $memo->to,
+                'time' => $memo->created_at
             ]);
-            return  response()->json($result);
         }
+        return  response()->json($result);
     }
 
     /**
