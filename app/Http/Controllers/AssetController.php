@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Asset;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
+use Webpatser\Uuid\Uuid;
 
 class AssetController extends Controller
 {
@@ -40,7 +40,8 @@ class AssetController extends Controller
         $input = $request->all();
         //print_r($input);
         if ($request->hasFile('asset') && $request->file('asset')->isValid()) {
-            $path = $request->asset->store('assets');
+            $filename = Uuid::generate() . '.' . $request->asset->getExtension();
+            $path = $request->asset->storeAs('assets', $filename);
 
             if ($path != null) {
                 $description = $request->description;
@@ -51,7 +52,7 @@ class AssetController extends Controller
                     'description' => $description,
                     'type' => $type,
                     'size' => $size,
-                    'filepath' => $path
+                    'name' => $filename
                 ]);
                 $asset->save();
                 return response($asset->id, 200);
@@ -77,9 +78,10 @@ class AssetController extends Controller
             return response('Not found', 404);
         }
 
-        $file = Storage::get($asset->filepath);
+        //$file = Storage::get($asset->name);
 
-        return (new Response($file, 200))->header('Content-Type', $asset->type);
+        //return (new Response($file, 200))->header('Content-Type', $asset->type);
+        return response()->download(storage_path('app/assets/') . $asset->name, $asset->description);
     }
 
     /**
