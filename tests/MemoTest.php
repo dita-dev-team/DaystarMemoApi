@@ -129,6 +129,13 @@ class MemoTest extends TestCase
                 'body' => $memo->body,
             ]);
         $this->assertContains('filename', $this->response->content(), 'Should contain filename');
+        $data = (array)json_decode($this->response->content());
+        $id = $data['id'];
+        $this->call('GET', '/api/files/' . ($id + 10));
+        $this->assertResponseStatus(404);
+        $this->call('GET', '/api/files/' . $id);
+        $this->assertResponseOk();
+        $this->assertContains('attachment', (string)$this->response);
     }
 
     protected function beforeApplicationDestroyed(callable $callback)

@@ -33,6 +33,10 @@ Route::group(['prefix' => 'api'], function () {
     Route::resource('memos', 'MemoController', ['except' => [
         'edit', 'create'
     ]]);
+
+    Route::resource('files', 'FileController', ['only' => [
+        'show'
+    ]]);
 });
 
 

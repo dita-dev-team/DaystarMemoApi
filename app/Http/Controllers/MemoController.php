@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Group;
 use App\Memo;
 use App\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Webpatser\Uuid\Uuid;
 
@@ -66,7 +67,7 @@ class MemoController extends Controller
 
         if ($isFile && $input['file']->isValid()) {
             $filename = Uuid::generate() . '.' . $input['file']->getExtension();
-            $input['file']->storeAs('memos', $filename);
+            $input['file']->storeAs('memos/' . Carbon::now()->toDateString(), $filename);
         }
 
         $memo = new Memo(['body' => $input['body']]);
@@ -92,7 +93,7 @@ class MemoController extends Controller
             'id' => $memo->id,
             'body' => $memo->body,
             'sender' => $memo->from->email,
-            'date' => $memo->created_at,
+            'date' => $memo->created_at->toDateTimeString(),
         ];
 
         if ($memo->is_file != 0) {

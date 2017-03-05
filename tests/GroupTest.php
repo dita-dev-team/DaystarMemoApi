@@ -1,5 +1,6 @@
 <?php
 
+use App\Group;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class GroupTest extends TestCase
@@ -141,12 +142,14 @@ class GroupTest extends TestCase
             'name' => $group->name
         ])->seeStatusCode(400);
 
+
         $this->json('POST', '/api/groups', [
             'name' => $group->name,
             'type' => $group->type,
             'privacy' => $group->privacy,
             'interaction' => $group->interaction,
-            'owner' => 'testuser'
+            'owner' => $user->id + 10
+
         ])->seeStatusCode(404);
 
         $this->json('POST', '/api/groups', [
@@ -154,15 +157,19 @@ class GroupTest extends TestCase
             'type' => $group->type,
             'privacy' => $group->privacy,
             'interaction' => $group->interaction,
-            'owner' => $user->email
+            'owner' => $user->id
         ])->seeStatusCode(201);
+
+        $result = Group::all()->first();
+
+        $this->assertEquals($group->name, $result->name);
 
         $this->json('POST', '/api/groups', [
             'name' => $group->name,
             'type' => $group->type,
             'privacy' => $group->privacy,
             'interaction' => $group->interaction,
-            'owner' => $user->email
+            'owner' => $user->id
         ])->seeStatusCode(409);
 
         $this->get('/api/groups')
@@ -171,11 +178,17 @@ class GroupTest extends TestCase
                 'totalOwners' => 1
             ]);
 
-        $this->get('/api/groups/' . $group->name)
+        $this->get('/api/groups/' . $group->id)
             ->seeJson([
                 'name' => $group->name,
                 'totalOwners' => 1
             ]);
+
+        $this->delete('/api/groups/' . ($result->id + 10))
+            ->seeStatusCode(404);
+
+        $this->delete('/api/groups/' . $result->id)
+            ->seeStatusCode(200);
 
     }
 }

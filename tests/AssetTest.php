@@ -49,4 +49,10 @@ class AssetTest extends TestCase
         $this->assertCount(0, $assets, 'Count should be equal to 0');
     }
 
+    protected function beforeApplicationDestroyed(callable $callback)
+    {
+        parent::beforeApplicationDestroyed($callback);
+        File::cleanDirectory(storage_path('app/assets/'));
+    }
+
 }
