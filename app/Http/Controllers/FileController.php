@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Asset;
+use App\Memo;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Webpatser\Uuid\Uuid;
 
-class AssetController extends Controller
+class FileController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -37,31 +36,7 @@ class AssetController extends Controller
      */
     public function store(Request $request)
     {
-        $input = $request->all();
-        //print_r($input);
-        if ($request->hasFile('asset') && $request->file('asset')->isValid()) {
-            $filename = Uuid::generate() . '.' . $request->asset->getExtension();
-            $path = $request->asset->storeAs('assets', $filename);
-
-            if ($path != null) {
-                $description = $request->description;
-                $type = $request->asset->extension();
-                $size = $request->asset->getSize();
-
-                $asset = new Asset([
-                    'description' => $description,
-                    'type' => $type,
-                    'size' => $size,
-                    'name' => $filename
-                ]);
-                $asset->save();
-                return response($asset->id, 200);
-            }
-
-            return response('an error occurred while saving the file', 500);
-        }
-
-        return response('Invalid upload', 400);
+        //
     }
 
     /**
@@ -72,9 +47,10 @@ class AssetController extends Controller
      */
     public function show($id)
     {
-        $asset = Asset::findOrFail($id);
+        $memo = Memo::findOrFail($id);
+        $today = Carbon::now()->toDateString();
+        return response()->download(storage_path('app/memos/' . $today . '/') . $memo->filename);
 
-        return response()->download(storage_path('app/assets/') . $asset->name, $asset->description);
     }
 
     /**
@@ -108,11 +84,6 @@ class AssetController extends Controller
      */
     public function destroy($id)
     {
-        $asset = Asset::findOrFail($id);
-        Storage::delete('assets/' . $asset->name);
-
-        $asset->delete();
-
-        return response('success', 200);
+        //
     }
 }

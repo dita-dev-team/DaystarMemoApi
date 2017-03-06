@@ -7,6 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 class Asset extends Model
 {
     protected $fillable = [
-        'description', 'size', 'type', 'filepath'
+        'description', 'size', 'type', 'name'
     ];
 }

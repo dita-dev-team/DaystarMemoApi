@@ -49,6 +49,12 @@ $factory->define(App\Asset::class, function (Faker\Generator $faker) {
         'description' => $faker->text(100),
         'type' => $faker->fileExtension,
         'size' => $faker->randomNumber(5),
-        'filepath' => '/tmp/' . $faker->text(10) . $faker->fileExtension
+        'name' => $faker->uuid . '.' . $faker->fileExtension
     ];
+});
+
+$factory->define(\App\Memo::class, function (Faker\Generator $faker) {
+   return [
+       'body' => $faker->text()
+   ];
 });

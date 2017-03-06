@@ -14,6 +14,7 @@ class AssetTest extends TestCase
         $assets = App\Asset::all();
         $this->assertCount(1, $assets, 'Count should be equal to 1');
         $this->assertEquals($asset->description, $assets->first()->description);
+        $this->assertEquals($asset->name, $assets->first()->name);
     }
 
     public function testAssetRoute()
@@ -39,12 +40,19 @@ class AssetTest extends TestCase
         $this->assertResponseStatus(404);
         $this->call('GET', '/api/assets/' . $assetId);
         $this->assertResponseOk();
+        $this->assertContains('attachment', (string)$this->response);
         $this->call('DELETE', '/api/assets/' . $assetId . 1);
         $this->assertResponseStatus(404);
         $this->call('DELETE', '/api/assets/' . $assetId);
         $this->assertResponseOk();
         $assets = App\Asset::all();
         $this->assertCount(0, $assets, 'Count should be equal to 0');
+    }
+
+    protected function beforeApplicationDestroyed(callable $callback)
+    {
+        parent::beforeApplicationDestroyed($callback);
+        File::cleanDirectory(storage_path('app/assets/'));
     }
 
 }

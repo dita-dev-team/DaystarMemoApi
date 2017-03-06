@@ -6,10 +6,27 @@ use Illuminate\Database\Eloquent\Model;
 
 class Memo extends Model
 {
-    protected $fillable = ['content','file_url'];
+    protected $fillable = [
+        'body'
+    ];
 
-    public function user()
+    public function to()
     {
-        return $this->belongsTo('App\User');
+        return $this->morphTo('to');
+    }
+
+    public function from()
+    {
+        return $this->belongsTo('App\User', 'user_id');
+    }
+
+    public function setSender(User $user)
+    {
+        $this->from()->associate($user);
+    }
+
+    public function setRecipient($to)
+    {
+        $this->to()->associate($to);
     }
 }

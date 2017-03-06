@@ -30,12 +30,13 @@ Route::group(['prefix' => 'api'], function () {
         'edit', 'create'
     ]]);
 
-    Route::resource('memos', 'MemoController', ['only' => [
-        'index', 'show', 'store'
+    Route::resource('memos', 'MemoController', ['except' => [
+        'edit', 'create'
     ]]);
 
-//    Route::post('memos/{memo}/send', 'MemoController@storeMemo');
-//    Route::post('memos/{id}/getMemo', 'MemoController@getMemoById');
+    Route::resource('files', 'FileController', ['only' => [
+        'show'
+    ]]);
 });
 
 
