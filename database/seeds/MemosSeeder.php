@@ -12,15 +12,15 @@ class MemosSeeder extends Seeder
     public function run()
     {
         DB::table('memos')->insert([[
-            'content' => 'Test Memo 1',
+            'memo_body' => 'Test Memo 1',
             'file_url' => '',
-            'user_id'=>  \App\User::find(5)->id,
-            'to' => \App\User::find(5)->id,
+            'user_id'=>  \App\User::find(1)->id,
+            'to' => \App\User::find(1)->id,
         ],[
-            'content' => 'Test Memo 2',
+            'memo_body' => 'Test Memo 2',
             'file_url' => 'img/this.jpg',
-            'user_id' => \App\User::find(5)->id,
-            'to' => \App\User::find(5)->id
+            'user_id' => \App\User::find(1)->id,
+            'to' => \App\User::find(1)->id
         ]]);
     }
 }

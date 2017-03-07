@@ -16,6 +16,9 @@ class MemoController extends Controller
      */
     public function index()
     {
+        /*
+         * Returns all memos
+         */
 
         $memos = Memo::all();
         $result = array();
@@ -24,7 +27,7 @@ class MemoController extends Controller
             array_push($result, [
                 'id' => $memo->id,
                 'file_url' => $memo->file_url,
-                'content' => $memo->content,
+                'content' => $memo->memo_body,
                 'user_id' => $memo->user_id,
                 'to' => $memo->to,
                 'time' => $memo->created_at
@@ -51,12 +54,19 @@ class MemoController extends Controller
      */
     public function store(Request $request)
     {
+        /*
+         * Receives:
+         *  User Id as 'user_id',
+         *  Recipient User Id as 'to',
+         *  Memo content as 'memo_body',
+         *  Files as 'file'
+         */
 
         $memo = new Memo;
         $user = new User;
 
-        if ($request->get('user_id') == null || $request->get('body_content') == null || $request->get('to') == null) {
-            return response()->json('parameters missing', 403);
+        if ($request->get('user_id') == null || $request->get('memo_body') == null || $request->get('to') == null) {
+            return response()->json('Parameters Missing', 403);
         } elseif (!ctype_digit(strval($request->get('user_id'))) || !ctype_digit(strval($request->get('to')))) {
             return response()->json(['Invalid User Id Type', 'or', 'Invalid Recipient Id', 'Expecting Int Value'], 403);
         } else {
@@ -68,12 +78,12 @@ class MemoController extends Controller
             }
 
             $user_id = $user->find($request->get('user_id'))->id;
-            $content = $request->body_content;
+            $memo_body = $request->memo_body;
             $to = $user->find($request->get('to'))->id;
 
 //         TODO get files and save them. Get uri and save in database
-            if ($request->hasFile('file_url')) {
-                $file = $request->file('file_url');
+            if ($request->hasFile('file')) {
+                $file = $request->file('file');
 
                 if ($file->getType() /* get file type image*/) {
                     /*Save the image file to disk and get url*/
@@ -82,14 +92,16 @@ class MemoController extends Controller
                 }
             }
 
-
             $memo->user_id = $user_id;
-            $memo->content = $content;
+            $memo->memo_body = $memo_body;
             $memo->to = $to;
+//          TODO add file_url
+
+            $input = ['Sender User Id' => $user_id, 'Memo Body' => $memo_body, 'Recipient Id' => $to /*TODO add file_url*/];
 //         TODO add file_url to database whenever there is a file included in the memo
 
             $memo->save();
-            return response()->json('Saved', 200);
+            return response()->json(['Saved', $input], 200);
         }
 
     }

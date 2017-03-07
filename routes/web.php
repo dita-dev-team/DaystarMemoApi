@@ -34,7 +34,6 @@ Route::group(['prefix' => 'api'], function () {
         'index', 'show', 'store'
     ]]);
 
-//    Route::post('memos/{memo}/send', 'MemoController@storeMemo');
 //    Route::post('memos/{id}/getMemo', 'MemoController@getMemoById');
 });
 
