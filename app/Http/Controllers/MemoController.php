@@ -3,10 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Memo;
-use App\Group;
 use App\User;
-use Faker\Provider\cs_CZ\DateTime;
 use Illuminate\Http\Request;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Storage;
 
 class MemoController extends Controller
