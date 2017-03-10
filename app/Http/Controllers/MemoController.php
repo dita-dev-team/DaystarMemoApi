@@ -66,7 +66,6 @@ class MemoController extends Controller
 
         $memo = new Memo;
         $user = new User;
-        $storage = new Storage;
 
         if ($request->get('user_id') == null || $request->get('memo_body') == null || $request->get('to') == null) {
             return response()->json('Parameters Missing', 403);
