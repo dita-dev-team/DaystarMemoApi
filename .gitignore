@@ -1,9 +1,32 @@
+# Laravel
 /node_modules
 /public/storage
 /storage/*.key
+/storage/framework/sessions
 /vendor
-/.idea
-Homestead.json
-Homestead.yaml
 .env
-/nbproject/private/
+
+composer.lock
+readme.md
+
+
+# Mac OS
+.DS_Store
+
+# PhpStorm
+.idea
+
+# Sublime Text
+*.sublime-*
+
+# Netbeans
+*nbproject*
+
+# App specific
+/storage/uploads
+/storage/app
+
+# Laradock
+/laradock/data
+/laradock/logs
+laradock/postgres/data
