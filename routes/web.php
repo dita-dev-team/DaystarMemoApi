@@ -38,6 +38,13 @@ Route::group(['prefix' => 'api'], function () {
 });
 
 
+Route::post('/store/image', 'ImageController@storePhoto');
+Route::post('/update/image', 'ImageController@storePhoto');
+
+Route::get('/retrieve/{resource}/{photo}/{id}', 'ImageController@getPhoto');
+Route::get('/delete/{resource}/{id}', 'ImageController@deletePhoto');
+
+
 Route::get('/testauth', function () {
     return response()->json([
         'message' => 'This is just a test authentication page'
