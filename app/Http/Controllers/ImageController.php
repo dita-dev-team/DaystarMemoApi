@@ -55,7 +55,7 @@ class ImageController extends Controller
         //Initialize  filename
         $filename = '';
         //Retrieve Resource
-        $resource = $request['resource'];
+        $resource = strtolower($request['resource']);
         //Retrieve Id.
         $id = $request['id'];
         //Retrieve Image
@@ -78,7 +78,7 @@ class ImageController extends Controller
         //Store Image Storage folder.
         $this->storeImage($param, $model, $image, $filename);
         //Return Response if Successful
-        return response()->json($model, 200);
+        return response()->json($model, 201);
     }
 
 
@@ -129,7 +129,7 @@ class ImageController extends Controller
         //Save in Database
         $model->save();
         //Return Response
-        return response()->json($model, 200);
+        return response()->json($model, 202);
     }
 
     /**
