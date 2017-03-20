@@ -74,6 +74,7 @@ class GroupController extends Controller
 
         $group->save();
 
+
         $group->addMember($user);
         $group->addOwner($user);
 

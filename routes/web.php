@@ -26,6 +26,8 @@ Route::group(['prefix' => 'api'], function () {
     Route::post('groups/{name}/owner/add', 'GroupDetailsController@addOwner');
     Route::post('groups/{name}/owner/remove', 'GroupDetailsController@removeOwner');
 
+    Route::post('notification/{id}/token', 'NotificationsController');
+
     Route::resource('assets', 'AssetController', ['except' => [
         'edit', 'create'
     ]]);
