@@ -17,14 +17,16 @@ Route::get('/', function () {
 
 
 Route::group(['prefix' => 'api'], function () {
+
+    Route::post('user/change-password', 'Auth\ChangePasswordController@change')->middleware('auth:api');
     Route::resource('groups', 'GroupController', ['except' => [
         'edit', 'create'
     ]]);
 
-    Route::post('groups/{name}/join', 'GroupDetailsController@join');
-    Route::post('groups/{name}/leave', 'GroupDetailsController@leave');
-    Route::post('groups/{name}/owner/add', 'GroupDetailsController@addOwner');
-    Route::post('groups/{name}/owner/remove', 'GroupDetailsController@removeOwner');
+    Route::post('groups/{id}/join', 'GroupDetailsController@join');
+    Route::post('groups/{id}/leave', 'GroupDetailsController@leave');
+    Route::post('groups/{id}/owner/add', 'GroupDetailsController@addOwner');
+    Route::post('groups/{id}/owner/remove', 'GroupDetailsController@removeOwner');
 
     Route::resource('assets', 'AssetController', ['except' => [
         'edit', 'create'

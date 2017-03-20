@@ -8,29 +8,17 @@ use Illuminate\Http\Request;
 
 class GroupDetailsController extends Controller
 {
-    public function join($name, Request $request)
+    public function join($id, Request $request)
     {
-        $group = Group::where('name', $name)->first();
+        $group = Group::findOrFail($id);
 
-        if ($group == null) {
-            return response()->json([
-                'error' => 'not found'
-            ], 404);
-        }
-
-        if (!$request->has('username')) {
+        if (!$request->has('user')) {
             return response()->json([
                 'error' => 'missing parameter'
             ], 400);
         }
 
-        $user = User::where('email', $request->input('username'))->first();
-
-        if ($user == null) {
-            return response()->json([
-                'error' => 'not found'
-            ], 404);
-        }
+        $user = User::findOrFail($request->input('user'));
 
         $group->addMember($user);
 
@@ -39,29 +27,17 @@ class GroupDetailsController extends Controller
         ]);
     }
 
-    public function leave($name, Request $request)
+    public function leave($id, Request $request)
     {
-        $group = Group::where('name', $name)->first();
+        $group = Group::findOrFail($id);
 
-        if ($group == null) {
-            return response()->json([
-                'error' => 'not found'
-            ], 404);
-        }
-
-        if (!$request->has('username')) {
+        if (!$request->has('user')) {
             return response()->json([
                 'error' => 'missing parameter'
             ], 400);
         }
 
-        $user = User::where('email', $request->input('username'))->first();
-
-        if ($user == null) {
-            return response()->json([
-                'error' => 'not found'
-            ], 404);
-        }
+        $user = User::findOrFail($request->input('user'));
 
         $group->removeMember($user);
 
@@ -70,29 +46,17 @@ class GroupDetailsController extends Controller
         ]);
     }
 
-    public function addOwner($name, Request $request)
+    public function addOwner($id, Request $request)
     {
-        $group = Group::where('name', $name)->first();
+        $group = Group::findOrFail($id);
 
-        if ($group == null) {
-            return response()->json([
-                'error' => 'not found'
-            ], 404);
-        }
-
-        if (!$request->has('username')) {
+        if (!$request->has('user')) {
             return response()->json([
                 'error' => 'missing parameter'
             ], 400);
         }
 
-        $user = User::where('email', $request->input('username'))->first();
-
-        if ($user == null) {
-            return response()->json([
-                'error' => 'not found'
-            ], 404);
-        }
+        $user = User::findOrFail($request->input('user'));
 
         $isMember = $user->groups()->where('name', $group->name)->first() != null;
 
@@ -109,29 +73,17 @@ class GroupDetailsController extends Controller
         ]);
     }
 
-    public function removeOwner($name, Request $request)
+    public function removeOwner($id, Request $request)
     {
-        $group = Group::where('name', $name)->first();
+        $group = Group::findOrFail($id);
 
-        if ($group == null) {
-            return response()->json([
-                'error' => 'not found'
-            ], 404);
-        }
-
-        if (!$request->has('username')) {
+        if (!$request->has('user')) {
             return response()->json([
                 'error' => 'missing parameter'
             ], 400);
         }
 
-        $user = User::where('email', $request->input('username'))->first();
-
-        if ($user == null) {
-            return response()->json([
-                'error' => 'not found'
-            ], 404);
-        }
+        $user = User::findOrFail($request->input('user'));
 
         $group->removeOwner($user);
 

@@ -1,11 +1,6 @@
 <?php
 
-use Illuminate\Foundation\Testing\WithoutMiddleware;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\DB;
-use Laravel\Passport\ClientRepository;
 
 class UserTest extends TestCase
 {
@@ -56,16 +51,18 @@ class UserTest extends TestCase
             'password_confirmation' => $user->password
         ])->seeStatusCode(422);
 
-        /*
-        $this->json('POST', '/login', [
-            'email' => $user->email,
-            'password' => $user->password
-        ])->seeStatusCode(200);
-        */
-
         $client = factory(\Laravel\Passport\Client::class)->make();
         $client->redirect = $this->baseUrl . '/testauth';
         $client->save();
+
+        $this->json('POST', '/oauth/token', [
+            'grant_type' => 'password',
+            'client_id' => $client->id,
+            'client_secret' => $client->secret,
+            'username' => $user->email,
+            'password' => 'abc',
+            'scope' => ''
+        ])->seeStatusCode(401);
 
         $this->json('POST', '/oauth/token', [
             'grant_type' => 'password',
@@ -83,8 +80,38 @@ class UserTest extends TestCase
         ])->seeJson([
             'message' => 'This is just a test authentication page'
         ]);
-        //dd($accessToken);
-        //dd($this->baseUrl);
 
+        $new = $user->password . 'newpassword';
+
+        $this->json('POST', '/api/user/change-password', [
+            'password' => $new,
+            'password_confirmation' => $new,
+        ], [
+            'Authorization' => 'Bearer ' . $accessToken
+        ]);
+        $this->assertResponseStatus(422);
+
+        $this->json('POST', '/api/user/change-password', [
+            'current_password' => $user->password,
+            'password' => $new,
+            'password_confirmation' => $new . '2',
+        ], [
+            'Authorization' => 'Bearer ' . $accessToken
+        ]);
+        $this->assertResponseStatus(422);
+
+        $this->json('POST', '/api/user/change-password', [
+            'current_password' => $user->password,
+            'password' => $new,
+            'password_confirmation' => $new,
+        ], [
+            'Authorization' => 'Bearer ' . $accessToken
+        ]);
+        $this->assertResponseOk();
+
+
+        $user = \App\User::all()->first();
+
+        $this->assertTrue(password_verify($new, $user->password));
     }
 }
