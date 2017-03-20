@@ -18,7 +18,8 @@ Route::get('/', function () {
 
 Route::group(['prefix' => 'api'], function () {
 
-    Route::post('user/change-password', 'Auth\ChangePasswordController@change')->middleware('auth:api');
+    Route::post('user/change-password', 'UserController@change')->middleware('auth:api');
+    Route::get('user/profile', 'UserController@profile')->middleware('auth:api');
     Route::resource('groups', 'GroupController', ['except' => [
         'edit', 'create'
     ]]);

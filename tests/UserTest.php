@@ -113,5 +113,32 @@ class UserTest extends TestCase
         $user = \App\User::all()->first();
 
         $this->assertTrue(password_verify($new, $user->password));
+
+        $user1 = factory(App\User::class)->create();
+        $user2 = factory(App\User::class)->create();
+        $user3 = factory(App\User::class)->create();
+        $group = factory(App\Group::class)->create();
+        $user->addConnection($user1);
+        $user->addConnection($user2);
+        $user->addConnection($user3);
+        $group->addOwner($user);
+        $group->addMember($user);
+        $group->addMember($user1);
+
+        $this->assertEquals(3, $user->connections()->count());
+        $this->assertEquals(1, $user->groups()->count());
+
+        $this->json('GET', '/api/user/profile', [], [
+            'Authorization' => 'Bearer ' . $accessToken
+        ])->seeStatusCode(200);
+        $this->seeJsonStructure([
+            'connections' => [
+                '*' => ['name', 'id']
+            ],
+            'groups' => [
+                '*' => ['name', 'id']
+            ]
+        ]);
+
     }
 }
