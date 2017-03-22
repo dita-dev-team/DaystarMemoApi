@@ -5,8 +5,7 @@ namespace App\Http\Controllers;
 use App\Memo;
 use App\User;
 use Illuminate\Http\Request;
-use Illuminate\Filesystem\Filesystem;
-use Illuminate\Support\Facades\Storage;
+use Validator;
 
 class MemoController extends Controller
 {
@@ -66,8 +65,15 @@ class MemoController extends Controller
         $memo = new Memo;
         $user = new User;
 
-        if ($request->get('user_id') == null || $request->get('memo_body') == null || $request->get('to') == null) {
-            return response()->json('Parameters Missing', 403);
+        $validator = Validator::make($request->all(), [
+            'user_id' => 'required',
+            'memo_body' => 'required',
+            'to' => 'required',
+            'file' => 'sometimes'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 403);
         } elseif (!ctype_digit(strval($request->get('user_id'))) || !ctype_digit(strval($request->get('to')))) {
             return response()->json(['Invalid User Id Type', 'or', 'Invalid Recipient Id', 'Expecting Int Value'], 403);
         } else {
