@@ -20,7 +20,7 @@ class CreateMemosTable extends Migration
             $table->text('memo_body');
             $table->integer('to')->unsigned();
             $table->foreign('to')->references('id')->on('users');
-            $table->text('file_url')->nullable();
+            $table->string('img_url')->nullable()->default(null);
             $table->timestamps();
         });
         Schema::enableForeignKeyConstraints();
