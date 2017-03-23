@@ -99,7 +99,7 @@ class MemoController extends Controller
                 $filePath = $destinationPath . $filename;
 
                 $memo->user_id = $user_id;
-                $memo->memo_body = $memo_body;
+                $memo->content = $memo_body;
                 $memo->to = $to;
                 $memo->file_url = $filePath;
 
@@ -110,7 +110,7 @@ class MemoController extends Controller
                 return response()->json(['Saved', $input], 200);
             }else {
                 $memo->user_id = $user_id;
-                $memo->memo_body = $memo_body;
+                $memo->content = $memo_body;
                 $memo->to = $to;
 
                 $memo->save();
