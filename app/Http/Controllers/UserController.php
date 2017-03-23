@@ -22,6 +22,7 @@ class UserController extends Controller
         /** @var User $user */
         $user = Auth::user();
         $result = [
+            'id' => $user->id,
             'name' => $user->name,
             'email' => $user->email,
             'connections' => [],
@@ -55,7 +56,7 @@ class UserController extends Controller
         $user = $request->user();
         $user->password = bcrypt($request->input('password'));
         $user->save();
-        return response('success');
+        return response()->json(['status' => 'success']);
     }
 
     public function validator(array $data)
@@ -68,7 +69,6 @@ class UserController extends Controller
         return Validator::make($data, [
             'current_password' => 'required',
             'password' => 'required|same:password',
-            'password_confirmation' => 'required|same:password'
         ], $messages);
     }
 }
