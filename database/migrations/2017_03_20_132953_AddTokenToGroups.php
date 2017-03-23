@@ -14,7 +14,7 @@ class AddTokenToGroups extends Migration
     public function up()
     {
         Schema::table('groups', function (Blueprint $table) {
-            $table->string('notification_key');
+            $table->string('notification_key')->nullable();
         });
     }
 

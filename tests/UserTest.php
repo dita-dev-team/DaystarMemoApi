@@ -42,7 +42,6 @@ class UserTest extends TestCase
             'password' => $user->password,
             'password_confirmation' => $user->password
         ])->seeStatusCode(200);
-
         // test duplicates
         $this->json('POST', '/register', [
             'name' => $user->name,
@@ -72,7 +71,6 @@ class UserTest extends TestCase
             'password' => $user->password,
             'scope' => ''
         ])->see('access_token');
-
         $accessToken = $this->decodeResponseJson()['access_token'];
 
         $this->json('GET', '/testauth', [], [
@@ -139,6 +137,5 @@ class UserTest extends TestCase
                 '*' => ['name', 'id']
             ]
         ]);
-
     }
 }

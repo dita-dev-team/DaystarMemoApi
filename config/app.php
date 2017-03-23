@@ -181,7 +181,7 @@ return [
         /*
          * Intervention Image Controller.
          * */
-         Intervention\Image\ImageServiceProvider::class,
+        Intervention\Image\ImageServiceProvider::class,
     ],
 
     /*

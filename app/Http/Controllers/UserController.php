@@ -6,7 +6,7 @@
  * Time: 18:40
  */
 
-namespace app\Http\Controllers;
+namespace App\Http\Controllers;
 
 
 use App\Group;
@@ -21,8 +21,6 @@ class UserController extends Controller
     {
         /** @var User $user */
         $user = Auth::user();
-        //$user->load('connections');
-        //$user->load('groups');
         $result = [
             'name' => $user->name,
             'email' => $user->email,
