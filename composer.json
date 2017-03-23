@@ -9,7 +9,11 @@
   "type": "project",
   "require": {
     "php": ">=5.6.4",
+<<<<<<< HEAD
     "barryvdh/laravel-ide-helper": "^2.3",
+=======
+    "intervention/image": "^2.3",
+>>>>>>> c063f3a5e051d029b0aa85ce65d833fbd56bb812
     "laravel/framework": "5.3.*",
     "laravel/passport": "^1.0"
   },

@@ -71,11 +71,7 @@ class AssetController extends Controller
      */
     public function show($id)
     {
-        $asset = Asset::find($id);
-
-        if ($asset == null) {
-            return response('Not found', 404);
-        }
+        $asset = Asset::findOrFail($id);
 
         $file = Storage::get($asset->filepath);
 
@@ -113,11 +109,8 @@ class AssetController extends Controller
      */
     public function destroy($id)
     {
-        $asset = Asset::find($id);
+        $asset = Asset::findOrFail($id);
 
-        if ($asset == null) {
-            return response('Not found', 404);
-        }
         Storage::delete($asset->filepath);
 
         $asset->delete();

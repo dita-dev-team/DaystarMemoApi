@@ -57,11 +57,7 @@ class GroupController extends Controller
             }
         }
 
-        $user = User::where('email', $input['owner'])->first();
-
-        if ($user == null) {
-            return response('user does not exist', 404);
-        }
+        $user = User::findOrFail($input['owner']);
 
         $group = Group::where('name', $input['name'])->first();
 
@@ -81,31 +77,30 @@ class GroupController extends Controller
         $group->addMember($user);
         $group->addOwner($user);
 
-        return response('success', 201);
+        return response()->json([
+            'id' => $group->id
+        ], 201);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  string $name
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function show($name)
+    public function show($id)
     {
-        $group = Group::all()->where('name', $name)->first();
+        /** @var Group $group */
+        $group = Group::findOrFail($id);
 
-        if ($group == null) {
-            return response('Not found', 404);
-        } else {
-            return response()->json([
-                'name' => $group->name,
-                'type' => $group->type,
-                'privacy' => $group->privacy,
-                'interaction' => $group->interaction,
-                'totalMembers' => $group->members()->count(),
-                'totalOwners' => $group->owners()->count()
-            ]);
-        }
+        return response()->json([
+            'name' => $group->name,
+            'type' => $group->type,
+            'privacy' => $group->privacy,
+            'interaction' => $group->interaction,
+            'totalMembers' => $group->members()->count(),
+            'totalOwners' => $group->owners()->count()
+        ]);
     }
 
     /**
@@ -134,15 +129,11 @@ class GroupController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  string $name
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($name)
+    public function destroy($id)
     {
-        $group = Group::where('name', $name)->first();
-
-        if (group == null) {
-            return response('not found', 404);
-        }
+        $group = Group::findOrFail($id);
     }
 }

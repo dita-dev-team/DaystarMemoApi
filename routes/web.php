@@ -17,14 +17,17 @@ Route::get('/', function () {
 
 
 Route::group(['prefix' => 'api'], function () {
+
+    Route::post('user/change-password', 'UserController@change')->middleware('auth:api');
+    Route::get('user/profile', 'UserController@profile')->middleware('auth:api');
     Route::resource('groups', 'GroupController', ['except' => [
         'edit', 'create'
     ]]);
 
-    Route::post('groups/{name}/join', 'GroupDetailsController@join');
-    Route::post('groups/{name}/leave', 'GroupDetailsController@leave');
-    Route::post('groups/{name}/owner/add', 'GroupDetailsController@addOwner');
-    Route::post('groups/{name}/owner/remove', 'GroupDetailsController@removeOwner');
+    Route::post('groups/{id}/join', 'GroupDetailsController@join');
+    Route::post('groups/{id}/leave', 'GroupDetailsController@leave');
+    Route::post('groups/{id}/owner/add', 'GroupDetailsController@addOwner');
+    Route::post('groups/{id}/owner/remove', 'GroupDetailsController@removeOwner');
 
     Route::resource('assets', 'AssetController', ['except' => [
         'edit', 'create'
@@ -36,6 +39,13 @@ Route::group(['prefix' => 'api'], function () {
 
 //    Route::post('memos/{id}/getMemo', 'MemoController@getMemoById');
 });
+
+
+Route::post('/store/image', 'ImageController@storePhoto');
+Route::post('/update/image', 'ImageController@storePhoto');
+
+Route::get('/retrieve/{resource}/{photo}/{id}', 'ImageController@getPhoto');
+Route::get('/delete/{resource}/{id}', 'ImageController@deletePhoto');
 
 
 Route::get('/testauth', function () {
