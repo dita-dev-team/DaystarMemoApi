@@ -35,3 +35,4 @@ laradock/postgres/data
 
 /nbproject/private/
 /nbproject/
+/tests/coverage/
