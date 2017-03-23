@@ -17,7 +17,7 @@ class CreateMemosTable extends Migration
             $table->increments('id');
             $table->integer('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->text('memo_body');
+            $table->text('content');
             $table->integer('to')->unsigned();
             $table->foreign('to')->references('id')->on('users');
             $table->string('img_url')->nullable()->default(null);
