@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Storage;
 
 class ImageController extends Controller
 {
+    //<editor-fold desc="Retrieve an Image for any Model">
     public function getPhoto($resource, $photo, $id)
     {
         if (($resource === 'user') || ($resource === 'group') || ($resource === 'memo')) {
@@ -25,16 +26,59 @@ class ImageController extends Controller
             }
             //Get File Image name
             $image = $model->img_url;
-            //Return Response of Image
-            return $this->retrievePhoto($resource, $photo, $image);
+            //Get The File Path Of The Inage of Image
+            $filepath = self::getPhotoPath($resource, $photo, $image);
+            //Return Response.
+            return $this->displayPhoto($filepath);
         } else {
             //Return Error if Model is not valid
             return response()->json("$resource not found", 400);
         }
 
-
     }
 
+    /**
+     * @param $photo
+     * @param $image
+     * @return \Illuminate\Http\JsonResponse
+     * Return Image File Path
+     */
+    private function getPhotoPath($params, $photo, $image)
+    {
+        //Check if img_url is null
+        if ($image != null) {
+            //Get Avatar
+            if ($photo === 'avatar') {
+                $path = storage_path() . "/app/$params/avatars/" . $image;
+                return $path;
+            } //Get Thumbnail
+            elseif ($photo === 'thumbnail') {
+                $path = storage_path() . "/app/$params/avatars/thumbnails/" . $image;
+                return $path;
+            }
+        } else {
+
+            return $path = null;
+        }
+    }
+
+    /**
+     * @param $path
+     * @return \Illuminate\Http\JsonResponse
+     * Return the Image as a response to user.
+     */
+    private function displayPhoto($path)
+    {
+        if (file_exists($path)) {
+            return response()->file($path);
+        } else {
+            return response()->json('Image Not Found', 400);
+
+        }
+    }
+    //</editor-fold>
+
+    //<editor-fold desc="Store Image For any Model">
     /**
      * Stores Photo in the Storage Folder
      *
@@ -51,7 +95,6 @@ class ImageController extends Controller
             'id' => 'required',
 
         ]);
-
         //Initialize  filename
         $filename = '';
         //Retrieve Resource
@@ -102,7 +145,35 @@ class ImageController extends Controller
         return response()->json('Images Stored Successfully', 201);
     }
 
-    //Remove A User Image
+    /**
+     * @param $image
+     * @param $filename
+     */
+    private function storeThumbnail($params, $image, $filename)
+    {   //Minimise and Resize to Thumbnail
+        $img = Image::make($image)->resize(400, 400)->encode('jpg', 50);
+        //Initialize the File name
+        $path = "$params/avatars/thumbnails/$filename";
+        //Store Thumbnail
+        $store = Storage::put($path, $img->__toString());
+    }
+
+    /**
+     * @param $image
+     * @param $filename
+     */
+    private function storeAvatar($params, $image, $filename)
+    {
+        //Store Avatar
+        $path = Storage::putFileAs(
+            "$params/avatars", $image, $filename
+        );
+    }
+    //</editor-fold>
+
+
+    //<editor-fold desc="Delete an Image for any Model">
+    //Remove An Image
     public function deletePhoto($resource, $id)
     {
         //Validate Resource is Valid
@@ -131,61 +202,10 @@ class ImageController extends Controller
         //Return Response
         return response()->json($model, 202);
     }
+    //</editor-fold>
 
-    /**
-     * @param $image
-     * @param $filename
-     */
-    private function storeThumbnail($params, $image, $filename)
-    {   //Minimise and Resize to Thumbnail
-        $img = Image::make($image)->resize(400, 400)->encode('jpg', 50);
-        //Initialize the File name
-        $path = "$params/avatars/thumbnails/$filename";
-        //Store Thumbnail
-        $store = Storage::put($path, $img->__toString());
-    }
 
-    /**
-     * @param $image
-     * @param $filename
-     */
-    private function storeAvatar($params, $image, $filename)
-    {
-        //Store Avatar
-        $path = Storage::putFileAs(
-            "$params/avatars", $image, $filename
-        );
-    }
-
-    /**
-     * @param $photo
-     * @param $image
-     * @return \Illuminate\Http\JsonResponse
-     */
-    private function retrievePhoto($params, $photo, $image)
-    {
-        //Check if img_url is null
-        if ($image != null) {
-            //Get Avatar
-            if ($photo === 'avatar') {
-                $path = storage_path() . "/app/$params/avatars/" . $image;
-                if (file_exists($path)) {
-
-                    return response()->file($path);
-                }
-            } //Get Thumbnail
-            elseif ($photo === 'thumbnail') {
-                $path = storage_path() . "/app/$params/avatars/thumbnails/" . $image;
-                if (file_exists($path)) {
-                    return response()->file($path);
-                }
-            }
-        } else {
-
-            return response()->json('Image Not Found', 400);
-        }
-    }
-
+    //<editor-fold desc="Validate a model Exists">
     /**
      * @param $resource
      * @param $id
@@ -202,5 +222,7 @@ class ImageController extends Controller
         $model = $models[$param]::where('id', $id)->first();
         return array($param, $model);
     }
+    //</editor-fold>
+
 
 }
