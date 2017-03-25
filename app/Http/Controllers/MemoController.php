@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\ImageUtils;
 use App\Memo;
 use App\User;
 use Illuminate\Http\Request;
@@ -87,38 +88,22 @@ class MemoController extends Controller
             $user_id = $user->find($request->get('user_id'))->id;
             $memo_body = $request->memo_body;
             $to = $user->find($request->get('to'))->id;
+            $memo->user_id = $user_id;
+            $memo->content = $memo_body;
+            $memo->to = $to;
+
+            $memo->save();
+
+            $input = ['Memo Id' => $memo->id, 'Sender User Id' => $user_id, 'Memo Body' => $memo_body, 'Recipient Id' => $to];
 
             if ($request->hasFile('file')) {
                 $file = $request->file('file');
 
-                $filename = time() . '.' .$file->getClientOriginalExtension();
-                $destinationPath = storage_path('memos/');
-
-                $file->move($destinationPath, $filename);
-
-                $filePath = $destinationPath . $filename;
-
-                $memo->user_id = $user_id;
-                $memo->content = $memo_body;
-                $memo->to = $to;
-                $memo->img_url = $filePath;
-
-                $memo->save();
-
-                $input = ['Memo Id' => $memo->id,'Sender User Id' => $user_id, 'Memo Body' => $memo_body, 'Recipient Id' => $to, 'File_url' => $filePath];
-
-                return response()->json(['Saved', $input], 200);
-            }else {
-                $memo->user_id = $user_id;
-                $memo->content = $memo_body;
-                $memo->to = $to;
-
-                $memo->save();
-
-                $input = ['Memo Id' => $memo->id, 'Sender User Id' => $user_id, 'Memo Body' => $memo_body, 'Recipient Id' => $to];
-
-                return response()->json(['Saved', $input], 200);
+                $filename = 'DAYSTAR-MEMO-FILE' . $memo->id . $file->getClientOriginalExtension();
+                ImageUtils::storeImage('memo', $memo, $file, $filename);
             }
+
+            return response()->json(['Saved', $input], 200);
         }
 
     }

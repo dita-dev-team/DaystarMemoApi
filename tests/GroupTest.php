@@ -13,8 +13,8 @@ class GroupTest extends TestCase
 
         $groups = App\Group::all();
 
-        $this->assertCount(2, $groups, 'Count should be equal to 1');
-        $this->assertEquals($groups->first()->name, $groups->first()->name);
+        $this->assertCount(1, $groups, 'Count should be equal to 1');
+        $this->assertEquals($group->name, $groups->first()->name);
     }
 
     public function testGroupDeletion()

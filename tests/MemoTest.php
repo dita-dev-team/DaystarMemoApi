@@ -35,10 +35,10 @@ class MemoTest extends TestCase
         $this->json('POST', '/api/memos', ['user_id' => $users->first()->id, 'memo_body' => 'Working on Coverage', 'to' => $users->first()->id, 'file' => $file])->assertResponseStatus(200);
 
         // Testing for wrong input or too few parameters
-        $this->json('POST', 'api/memos')->assertResponseStatus(403);
-        $this->json('POST', 'api/memos', ['user_id' => random_int(1,9)])->assertResponseStatus(403);
-        $this->json('POST', 'api/memos', ['user_id' => random_int(1,9), 'memo_body' => 'Crazy Tests'])->assertResponseStatus(403);
-        $this->json('POST', 'api/memos', ['user_id' => 'e', 'memo_body' => 'Tests huh!', 'to' => 'e'])->assertResponseStatus(403);
+        $this->json('POST', 'api/memos')->assertResponseStatus(400);
+        $this->json('POST', 'api/memos', ['user_id' => random_int(1, 9)])->assertResponseStatus(400);
+        $this->json('POST', 'api/memos', ['user_id' => random_int(1, 9), 'memo_body' => 'Crazy Tests'])->assertResponseStatus(400);
+        $this->json('POST', 'api/memos', ['user_id' => 'e', 'memo_body' => 'Tests huh!', 'to' => 'e'])->assertResponseStatus(400);
         $this->json('POST', 'api/memos', ['user_id' => random_int(11,20), 'memo_body' => 'Tests Again!', 'to' => random_int(11,20)])->assertResponseStatus(400);
         $this->json('POST', 'api/memos', ['user_id' => random_int(11, 20), 'memo_body' => 'Tests Lord Have Mercy!', 'to' => random_int(11,20)])->assertResponseStatus(400);
 
