@@ -6,79 +6,79 @@ use App\Group;
 use App\Memo;
 use App\User;
 use File;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Image;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class ImageController extends Controller
 {
+    //<editor-fold desc="Retrieve an Image for any Model">
     public function getPhoto($resource, $photo, $id)
     {
         if (($resource === 'user') || ($resource === 'group') || ($resource === 'memo')) {
 
             //Validate Model is valid and return valid response
-            list($param, $model) = $this->validateModelIsValid($resource, $id);
+            list($param, $model) = $this->validateModelisValid($resource, $id);
 
+            if ($model === null) {
+                return response()->json("Resource not found", 400);
+            }
             //Get File Image name
             $image = $model->img_url;
-            //Return Response of Image
-            return $this->retrievePhoto($resource, $photo, $image);
+            //Get The File Path Of The Inage of Image
+            $filepath = self::getPhotoPath($resource, $photo, $image);
+            //Return Response.
+            return $this->displayPhoto($filepath);
         } else {
             //Return Error if Model is not valid
-            return response()->json("$resource not found", 404);
+            return response()->json("$resource not found", 400);
         }
 
-
-    }
-
-    /**
-     * @param $resource
-     * @param $id
-     * @return array
-     */
-    private function validateModelIsValid($resource, $id)
-    {
-        $models = [
-            'User' => User::class,
-            'Group' => Group::class,
-            'Memo' => Memo::class,
-        ];
-        $param = ucwords($resource);
-        $model = $models[$param]::findOrFail($id);
-        return array($param, $model);
     }
 
     /**
      * @param $photo
      * @param $image
      * @return \Illuminate\Http\JsonResponse
+     * Return Image File Path
      */
-    private function retrievePhoto($params, $photo, $image)
+    private function getPhotoPath($params, $photo, $image)
     {
         //Check if img_url is null
         if ($image != null) {
             //Get Avatar
             if ($photo === 'avatar') {
                 $path = storage_path() . "/app/$params/avatars/" . $image;
-                if (file_exists($path)) {
-
-                    return response()->file($path);
-                }
+                return $path;
             } //Get Thumbnail
             elseif ($photo === 'thumbnail') {
                 $path = storage_path() . "/app/$params/avatars/thumbnails/" . $image;
-                if (file_exists($path)) {
-                    return response()->file($path);
-                }
+                return $path;
             }
         } else {
 
-            return response()->json('Image Not Found', 404);
+            return $path = null;
         }
     }
 
-    //Remove A User Image
+    /**
+     * @param $path
+     * @return \Illuminate\Http\JsonResponse
+     * Return the Image as a response to user.
+     */
+    private function displayPhoto($path)
+    {
+        if (file_exists($path)) {
+            return response()->file($path);
+        } else {
+            return response()->json('Image Not Found', 400);
 
+        }
+    }
+    //</editor-fold>
+
+    //<editor-fold desc="Store Image For any Model">
     /**
      * Stores Photo in the Storage Folder
      *
@@ -95,7 +95,6 @@ class ImageController extends Controller
             'id' => 'required',
 
         ]);
-
         //Initialize  filename
         $filename = '';
         //Retrieve Resource
@@ -108,22 +107,23 @@ class ImageController extends Controller
         //Validate Resource
         if (($resource === 'user') || ($resource === 'group') || ($resource === 'memo')) {
             //Make Model Call Dynamic.
-            list($param, $model) = $this->validateModelIsValid($resource, $id);
+            list($param, $model) = $this->validateModelisValid($resource, $id);
             //Return Error if Model
             if ($model === null) {
                 //Return Response
-                return response()->json("$param not found", 404);
+                return response()->json("$param not found", 400);
             }
             //Create Filename
             $filename = 'DAYSTAR-' . strtoupper($param) . '-FILE' . $model->id . '.jpg';
         } else {
-            return response()->json("Resource not found", 404);
+            return response()->json("Resource not found", 400);
         }
         //Store Image Storage folder.
         $this->storeImage($param, $model, $image, $filename);
         //Return Response if Successful
         return response()->json($model, 201);
     }
+
 
     /**
      * Stores Images to Storage Folder and Store Filename to Database
@@ -149,18 +149,6 @@ class ImageController extends Controller
      * @param $image
      * @param $filename
      */
-    private function storeAvatar($params, $image, $filename)
-    {
-        //Store Avatar
-        $path = Storage::putFileAs(
-            "$params/avatars", $image, $filename
-        );
-    }
-
-    /**
-     * @param $image
-     * @param $filename
-     */
     private function storeThumbnail($params, $image, $filename)
     {   //Minimise and Resize to Thumbnail
         $img = Image::make($image)->resize(400, 400)->encode('jpg', 50);
@@ -170,13 +158,34 @@ class ImageController extends Controller
         $store = Storage::put($path, $img->__toString());
     }
 
+    /**
+     * @param $image
+     * @param $filename
+     */
+    private function storeAvatar($params, $image, $filename)
+    {
+        //Store Avatar
+        $path = Storage::putFileAs(
+            "$params/avatars", $image, $filename
+        );
+    }
+    //</editor-fold>
+
+
+    //<editor-fold desc="Delete an Image for any Model">
+    //Remove An Image
     public function deletePhoto($resource, $id)
     {
         //Validate Resource is Valid
         if (($resource === 'user') || ($resource === 'group') || ($resource === 'memo')) {
 
             //Validate Model is valid and return valid response
-            list($param, $model) = $this->validateModelIsValid($resource, $id);
+            list($param, $model) = $this->validateModelisValid($resource, $id);
+            //Check if Model is valid
+            if ($model === null) {
+                //Return Error
+                return response()->json("Resource not found", 400);
+            }
         }
         //Get Image Name
         $image = $model->img_url;
@@ -193,5 +202,27 @@ class ImageController extends Controller
         //Return Response
         return response()->json($model, 202);
     }
+    //</editor-fold>
+
+
+    //<editor-fold desc="Validate a model Exists">
+    /**
+     * @param $resource
+     * @param $id
+     * @return array
+     */
+    private function validateModelisValid($resource, $id)
+    {
+        $models = [
+            'User' => User::class,
+            'Group' => Group::class,
+            'Memo' => Memo::class,
+        ];
+        $param = ucwords($resource);
+        $model = $models[$param]::where('id', $id)->first();
+        return array($param, $model);
+    }
+    //</editor-fold>
+
 
 }
