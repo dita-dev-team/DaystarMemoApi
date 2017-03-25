@@ -6,10 +6,12 @@
  * Time: 11:14 AM
  */
 
-use \Illuminate\Http\UploadedFile;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Http\UploadedFile;
 
 class MemoTest extends TestCase
 {
+    use DatabaseTransactions;
     /*
      * Testing the Get Request for all memos
      */

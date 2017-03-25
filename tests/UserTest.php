@@ -92,16 +92,6 @@ class UserTest extends TestCase
         $this->json('POST', '/api/user/change-password', [
             'current_password' => $user->password,
             'password' => $new,
-            'password_confirmation' => $new . '2',
-        ], [
-            'Authorization' => 'Bearer ' . $accessToken
-        ]);
-        $this->assertResponseStatus(422);
-
-        $this->json('POST', '/api/user/change-password', [
-            'current_password' => $user->password,
-            'password' => $new,
-            'password_confirmation' => $new,
         ], [
             'Authorization' => 'Bearer ' . $accessToken
         ]);

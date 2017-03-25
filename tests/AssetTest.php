@@ -22,7 +22,7 @@ class AssetTest extends TestCase
         $path = storage_path('testing/image.jpg');
         $name = 'image.jpg';
         $mimeType = 'image/jpeg';
-        $size = 185134;
+        $size = filesize($path);
         $error = null;
         $test = true;
         $file = new UploadedFile($path, $name, $mimeType, $size, $error, $test);
