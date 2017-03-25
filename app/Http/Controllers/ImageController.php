@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Group;
-use App\ImageUtils;
 use App\Memo;
 use App\User;
+use App\Utilites\ImageUtilities;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -19,7 +19,7 @@ class ImageController extends Controller
             list($param, $model) = $this->validateModelIsValid($resource, $id);
             //Get File Image name
             $image = $model->img_url;
-            $result = ImageUtils::getImage($resource, $photo, $image);
+            $result = ImageUtilities::getImage($resource, $photo, $image);
 
             if ($result != null) {
                 return response()->file($result);
@@ -85,7 +85,7 @@ class ImageController extends Controller
             return response()->json("Resource not found", 404);
         }
         //Store Image Storage folder.
-        ImageUtils::storeImage(strtolower($param), $model, $image, $filename);
+        ImageUtilities::storeImage(strtolower($param), $model, $image, $filename);
         //Return Response if Successful
         return response()->json($model, 201);
     }

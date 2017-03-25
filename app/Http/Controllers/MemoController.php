@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\ImageUtils;
 use App\Memo;
 use App\User;
+use App\Utilites\ImageUtilities;
 use Illuminate\Http\Request;
 use Validator;
 
@@ -100,7 +100,7 @@ class MemoController extends Controller
                 $file = $request->file('file');
 
                 $filename = 'DAYSTAR-MEMO-FILE' . $memo->id . $file->getClientOriginalExtension();
-                ImageUtils::storeImage('memo', $memo, $file, $filename);
+                ImageUtilities::storeImage('memo', $memo, $file, $filename);
             }
 
             return response()->json(['Saved', $input], 200);
