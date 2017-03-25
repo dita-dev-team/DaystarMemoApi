@@ -73,9 +73,9 @@ class MemoController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 403);
+            return response()->json($validator->errors(), 400);
         } elseif (!ctype_digit(strval($request->get('user_id'))) || !ctype_digit(strval($request->get('to')))) {
-            return response()->json(['Invalid User Id Type', 'or', 'Invalid Recipient Id', 'Expecting Int Value'], 403);
+            return response()->json(['Invalid User Id Type', 'or', 'Invalid Recipient Id', 'Expecting Int Value'], 400);
         } else {
 
             if (!$user->find($request->get('user_id'))) {
@@ -101,7 +101,7 @@ class MemoController extends Controller
                 $memo->user_id = $user_id;
                 $memo->content = $memo_body;
                 $memo->to = $to;
-                $memo->file_url = $filePath;
+                $memo->img_url = $filePath;
 
                 $memo->save();
 
