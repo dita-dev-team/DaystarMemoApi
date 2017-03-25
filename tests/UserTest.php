@@ -23,7 +23,7 @@ class UserTest extends TestCase
 
         $users = App\User::all();
 
-        $this->assertCount(2, $users, 'Count should be equal to 2');
+        $this->assertCount(3, $users, 'Count should be equal to 2');
 
         $user1->addConnection($user2);
         $this->assertEquals(1, $user1->connections()->count());
