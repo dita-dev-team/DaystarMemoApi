@@ -58,8 +58,9 @@ class MemoController extends Controller
          * Receives:
          *  User Id as 'user_id',
          *  Memo content as 'memo_body',
-         *  Recipient User Id as 'to',
-         *  Files as 'file'
+         *  Recipient User or Group Id as 'to_user' or 'to_group',
+         *  Files as 'file' optional
+         *
          */
 
         $memo = new Memo;
@@ -68,56 +69,99 @@ class MemoController extends Controller
         $validator = Validator::make($request->all(), [
             'user_id' => 'required',
             'memo_body' => 'required',
-            'to' => 'required',
+            'to_user' => 'sometimes',
+            'to_group' => 'sometimes',
             'file' => 'sometimes'
         ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 403);
-        } elseif (!ctype_digit(strval($request->get('user_id'))) || !ctype_digit(strval($request->get('to')))) {
+        }elseif ($request->get('to_user') || $request->get('to_group')){
+            return response()->json(['The Recipient Must Either be a User or a Group', 403]);
+        }elseif ($request->get('to_user') && $request->get('to_group')){
+            return response()->json(['The Recipient Must Either be a User or a Group but not both', 403]);
+        }elseif (!ctype_digit(strval($request->get('user_id'))) || !ctype_digit(strval($request->get('to_user'))) || !ctype_digit(strval($request->get('to_group')))) {
             return response()->json(['Invalid User Id Type', 'or', 'Invalid Recipient Id', 'Expecting Int Value'], 403);
         } else {
 
             if (!$user->find($request->get('user_id'))) {
-                return response()->json('User Id Not Found', 400);
-            } elseif (!$user->find($request->get('to'))) {
-                return response()->json('Recipient User Id Not Found', 400);
-            }
+                return response()->json('User Id Not Found', 404);
+            } elseif (!$user->find($request->get('to_user')) || !$user->find($request->get('to_group'))) {
+                return response()->json('Recipient User or Group Id Not Found', 404);
+            }elseif(!$request->get('to_group') && $request->get('to_user')){
 
-            $user_id = $user->find($request->get('user_id'))->id;
-            $memo_body = $request->memo_body;
-            $to = $user->find($request->get('to'))->id;
+                $user_id = $user->find($request->get('user_id'))->id;
+                $memo_body = $request->memo_body;
+                $to_user = $user->find($request->get('to_user'))->id;
 
-            if ($request->hasFile('file')) {
-                $file = $request->file('file');
+                if ($request->hasFile('file')) {
+                    $file = $request->file('file');
 
-                $filename = time() . '.' .$file->getClientOriginalExtension();
-                $destinationPath = storage_path('memos/');
+                    $filename = time() . '.' .$file->getClientOriginalExtension();
+                    $destinationPath = storage_path('memos/');
 
-                $file->move($destinationPath, $filename);
+                    $file->move($destinationPath, $filename);
 
-                $filePath = $destinationPath . $filename;
+                    $filePath = $destinationPath . $filename;
 
-                $memo->user_id = $user_id;
-                $memo->content = $memo_body;
-                $memo->to = $to;
-                $memo->file_url = $filePath;
+                    $memo->user_id = $user_id;
+                    $memo->content = $memo_body;
+                    $memo->to_user = $to_user;
+                    $memo->img_url = $filePath;
 
-                $memo->save();
+                    $memo->save();
 
-                $input = ['Memo Id' => $memo->id,'Sender User Id' => $user_id, 'Memo Body' => $memo_body, 'Recipient Id' => $to, 'File_url' => $filePath];
+                    $input = ['Memo Id' => $memo->id,'Sender User Id' => $user_id, 'Memo Body' => $memo_body, 'Recipient User Id' => $to_user, 'Image_url' => $filePath];
 
-                return response()->json(['Saved', $input], 200);
-            }else {
-                $memo->user_id = $user_id;
-                $memo->content = $memo_body;
-                $memo->to = $to;
+                    return response()->json(['Saved', $input], 200);
+                }else {
+                    $memo->user_id = $user_id;
+                    $memo->content = $memo_body;
+                    $memo->to_user = $to_user;
 
-                $memo->save();
+                    $memo->save();
 
-                $input = ['Memo Id' => $memo->id, 'Sender User Id' => $user_id, 'Memo Body' => $memo_body, 'Recipient Id' => $to];
+                    $input = ['Memo Id' => $memo->id, 'Sender User Id' => $user_id, 'Memo Body' => $memo_body, 'Recipient User Id' => $to_user];
 
-                return response()->json(['Saved', $input], 200);
+                    return response()->json(['Saved', $input], 200);
+                }
+            }elseif($request->get('to_group') && !$request->get('to_user')){
+                $user_id = $user->find($request->get('user_id'))->id;
+                $memo_body = $request->memo_body;
+                $to_group = $user->find($request->get('to_group'))->id;
+
+                if ($request->hasFile('file')) {
+                    $file = $request->file('file');
+
+                    $filename = time() . '.' .$file->getClientOriginalExtension();
+                    $destinationPath = storage_path('memos/');
+
+                    $file->move($destinationPath, $filename);
+
+                    $filePath = $destinationPath . $filename;
+
+                    $memo->user_id = $user_id;
+                    $memo->content = $memo_body;
+                    $memo->to_group = $to_group;
+                    $memo->img_url = $filePath;
+
+                    $memo->save();
+
+                    $input = ['Memo Id' => $memo->id,'Sender User Id' => $user_id, 'Memo Body' => $memo_body, 'Recipient Group Id' => $to_group, 'Image_url' => $filePath];
+
+                    return response()->json(['Saved', $input], 200);
+                }else {
+                    $memo->user_id = $user_id;
+                    $memo->content = $memo_body;
+                    $memo->to_group = $to_group;
+
+                    $memo->save();
+
+                    $input = ['Memo Id' => $memo->id, 'Sender User Id' => $user_id, 'Memo Body' => $memo_body, 'Recipient Group Id' => $to_group];
+
+                    return response()->json(['Saved', $input], 200);
+                }
+
             }
         }
 

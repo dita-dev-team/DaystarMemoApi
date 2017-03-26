@@ -18,8 +18,10 @@ class CreateMemosTable extends Migration
             $table->integer('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->text('content');
-            $table->integer('to')->unsigned();
-            $table->foreign('to')->references('id')->on('users');
+            $table->integer('to_user')->unsigned()->nullable();
+            $table->foreign('to_user')->references('id')->on('users');
+            $table->integer('to_group')->unsigned()->nullable();
+            $table->foreign('to_group')->references('id')->on('groups');
             $table->string('img_url')->nullable()->default(null);
             $table->timestamps();
         });
