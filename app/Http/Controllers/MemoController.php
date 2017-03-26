@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Memo;
 use App\User;
+use App\Group;
 use Illuminate\Http\Request;
 use Validator;
 
@@ -65,6 +66,7 @@ class MemoController extends Controller
 
         $memo = new Memo;
         $user = new User;
+        $group = new Group;
 
         $validator = Validator::make($request->all(), [
             'user_id' => 'required',
@@ -76,17 +78,15 @@ class MemoController extends Controller
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 403);
-        }elseif ($request->get('to_user') || $request->get('to_group')){
-            return response()->json(['The Recipient Must Either be a User or a Group', 403]);
-        }elseif ($request->get('to_user') && $request->get('to_group')){
-            return response()->json(['The Recipient Must Either be a User or a Group but not both', 403]);
-        }elseif (!ctype_digit(strval($request->get('user_id'))) || !ctype_digit(strval($request->get('to_user'))) || !ctype_digit(strval($request->get('to_group')))) {
+        }elseif ($request->get('to_user') === null && $request->get('to_group') === null){
+            return response()->json(['The Recipient Must Either be a User or a Group but not both'], 403);
+        }elseif (!ctype_digit(strval($request->get('user_id'))) || !ctype_digit(strval($request->get('to_user'))) && !ctype_digit(strval($request->get('to_group')))) {
             return response()->json(['Invalid User Id Type', 'or', 'Invalid Recipient Id', 'Expecting Int Value'], 403);
-        } else {
+        }else {
 
             if (!$user->find($request->get('user_id'))) {
                 return response()->json('User Id Not Found', 404);
-            } elseif (!$user->find($request->get('to_user')) || !$user->find($request->get('to_group'))) {
+            }elseif (!$user->find($request->get('to_user')) && !$user->find($request->get('to_group'))) {
                 return response()->json('Recipient User or Group Id Not Found', 404);
             }elseif(!$request->get('to_group') && $request->get('to_user')){
 
@@ -128,7 +128,7 @@ class MemoController extends Controller
             }elseif($request->get('to_group') && !$request->get('to_user')){
                 $user_id = $user->find($request->get('user_id'))->id;
                 $memo_body = $request->memo_body;
-                $to_group = $user->find($request->get('to_group'))->id;
+                $to_group = $group->find($request->get('to_group'))->id;
 
                 if ($request->hasFile('file')) {
                     $file = $request->file('file');
