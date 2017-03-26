@@ -27,10 +27,11 @@ class MemoController extends Controller
         foreach ($memos as $memo) {
             array_push($result, [
                 'id' => $memo->id,
-                'file_url' => $memo->file_url,
-                'content' => $memo->memo_body,
+                'file_url' => $memo->img_url,
+                'memo_body' => $memo->content,
                 'user_id' => $memo->user_id,
-                'to' => $memo->to,
+                'to_user' => $memo->to_user,
+                'to_group' => $memo->to_group,
                 'time' => $memo->created_at
             ]);
         }
