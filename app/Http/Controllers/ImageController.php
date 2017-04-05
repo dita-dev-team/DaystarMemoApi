@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Group;
 use App\Memo;
 use App\User;
-use App\Utilites\ImageUtilities;
+use App\Utilities\ImageUtilities;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -80,7 +80,7 @@ class ImageController extends Controller
             //Make Model Call Dynamic.
             list($param, $model) = $this->validateModelIsValid($resource, $id);
             //Create Filename
-            $filename = 'DAYSTAR-' . strtoupper($param) . '-FILE' . $model->id . '.' . $request->file('image')->getClientOriginalExtension();
+            $filename = 'DAYSTAR-' . strtoupper($param) . '-FILE' . $model->id . '.' . $image->getClientOriginalExtension();
         } else {
             return response()->json("Resource not found", 404);
         }

@@ -6,7 +6,7 @@
  * Time: 14:55
  */
 
-namespace App\Utilites;
+namespace App\Utilities;
 
 
 use Illuminate\Support\Facades\Storage;

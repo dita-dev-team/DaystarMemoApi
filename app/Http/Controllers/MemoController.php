@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Memo;
 use App\User;
-use App\Utilites\ImageUtilities;
+use App\Utilities\ImageUtilities;
 use Illuminate\Http\Request;
 use Validator;
 
